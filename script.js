@@ -18,18 +18,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadRanking() {
     const teams = await getTeams();
-    // Ordena as equipes pela quantidade de pontos em ordem decrescente
-    teams.sort((a, b) => b.points - a.points);
     const tbody = document.querySelector("#ranking-table tbody");
     tbody.innerHTML = "";
     teams.forEach((team, index) => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${team.name}</td>
+        tr.innerHTML = 
+            `<td>${team.name}</td>
             <td><div style="background-color: ${team.color}; width: 20px; height: 20px;"></div></td>
             <td>${team.points}</td>
-            <td><button onclick="updateTeamPoints(${index})">Alterar Pontos</button></td>
-        `;
+            <td>
+                <button onclick="updateTeamPoints(${index})">Alterar Pontos</button>
+                <button onclick="deleteTeam(${index})">Excluir</button>
+            </td>`;
         tbody.appendChild(tr);
     });
 }
@@ -41,6 +41,15 @@ async function updateTeamPoints(index) {
         teams[index].points = parseInt(newPoints, 10);
         await saveTeams(teams);
         loadRanking();
+    }
+}
+
+async function deleteTeam(index) {
+    const teams = await getTeams();
+    if (confirm("Tem certeza de que deseja excluir esta equipe?")) {
+        teams.splice(index, 1); // Remove a equipe do array com base no índice
+        await saveTeams(teams); // Atualiza o armazenamento local
+        loadRanking(); // Recarrega a tabela para refletir a exclusão
     }
 }
 
