@@ -1,4 +1,4 @@
-const gistUrl = 'https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/FILE_ID/teams.json'; // Substitua pela URL do seu Gist
+const gistUrl = 'https://gist.github.com/awakeJa1/0e53c66a9f95646ce2288f16288fa457'; // Substitua pela URL do seu Gist
 
 // Função para carregar equipes do Gist
 async function loadTeams() {
