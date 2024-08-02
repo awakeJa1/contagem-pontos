@@ -12,7 +12,7 @@ exports.handler = async (event, context) => {
     const data = JSON.parse(event.body);
     const repoOwner = 'awakeJa1';  // Substitua pelo seu usuário do GitHub
     const repoName = 'contagem-pontos';  // Substitua pelo seu repositório
-    const filePath = 'teams.json';
+    const filePath = '\netlify\functions\teams.json';
     const branch = 'main'; // Substitua pelo seu branch
 
     const octokit = new Octokit({
