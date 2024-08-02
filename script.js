@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     loadRanking();
-    
+
     const form = document.getElementById("team-form");
     if (form) {
         form.addEventListener("submit", async (event) => {
@@ -55,7 +55,7 @@ async function deleteTeam(index) {
 }
 
 async function getTeams() {
-    const response = await fetch('teams.json');
+    const response = await fetch('https://raw.githubusercontent.com/awakeJa1/contagem-pontos/main/teams.json');
     if (!response.ok) {
         return [];
     }
@@ -63,7 +63,7 @@ async function getTeams() {
 }
 
 async function saveTeams(teams) {
-    const response = await fetch('save_teams.php', {
+    const response = await fetch('/.netlify/functions/save_teams', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
