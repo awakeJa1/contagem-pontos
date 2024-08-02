@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const teams = await getTeams();
             teams.push({ name: teamName, color: teamColor, points: teamPoints });
             await saveTeams(teams);
-            downloadJSON(teams, 'teams.json');  // Save JSON locally
             window.location.href = "index.html";
         });
     }
@@ -34,7 +33,6 @@ async function loadRanking() {
             </td>`;
         tbody.appendChild(tr);
     });
-    downloadJSON(teams, 'teams.json');  // Save JSON locally
 }
 
 async function updateTeamPoints(index) {
@@ -44,7 +42,6 @@ async function updateTeamPoints(index) {
         teams[index].points = parseInt(newPoints, 10);
         await saveTeams(teams);
         loadRanking();
-        downloadJSON(teams, 'teams.json');  // Save JSON locally
     }
 }
 
@@ -54,20 +51,7 @@ async function deleteTeam(index) {
         teams.splice(index, 1); // Remove a equipe do array com base no índice
         await saveTeams(teams); // Atualiza o armazenamento local
         loadRanking(); // Recarrega a tabela de ranking
-        downloadJSON(teams, 'teams.json');  // Save JSON locally
     }
-}
-
-function downloadJSON(data, filename) {
-    const jsonString = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
 }
 
 async function getTeams() {
@@ -79,5 +63,14 @@ async function getTeams() {
 }
 
 async function saveTeams(teams) {
-    localStorage.setItem('teams', JSON.stringify(teams));
+    const response = await fetch('save_teams.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(teams)
+    });
+    if (!response.ok) {
+        console.error('Erro ao salvar os dados em JSON');
+    }
 }
