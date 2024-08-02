@@ -16,7 +16,7 @@ exports.handler = async (event, context) => {
     const branch = 'main'; // Substitua pelo seu branch
 
     const octokit = new Octokit({
-        auth: `your_github_token` // Substitua pelo seu token de acesso do GitHub
+        auth: `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` // Substitua pelo seu token de acesso do GitHub
     });
 
     try {
