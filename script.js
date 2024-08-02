@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const teams = await getTeams();
             teams.push({ name: teamName, color: teamColor, points: teamPoints });
             await saveTeams(teams);
+            downloadJSON(teams, 'teams.json');  // Save JSON locally
             window.location.href = "index.html";
         });
     }
@@ -18,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadRanking() {
     const teams = await getTeams();
+    teams.sort((a, b) => b.points - a.points);  // Ordena as equipes por pontos (decrescente)
     const tbody = document.querySelector("#ranking-table tbody");
     tbody.innerHTML = "";
     teams.forEach((team, index) => {
@@ -32,6 +34,7 @@ async function loadRanking() {
             </td>`;
         tbody.appendChild(tr);
     });
+    downloadJSON(teams, 'teams.json');  // Save JSON locally
 }
 
 async function updateTeamPoints(index) {
@@ -41,6 +44,7 @@ async function updateTeamPoints(index) {
         teams[index].points = parseInt(newPoints, 10);
         await saveTeams(teams);
         loadRanking();
+        downloadJSON(teams, 'teams.json');  // Save JSON locally
     }
 }
 
@@ -49,14 +53,31 @@ async function deleteTeam(index) {
     if (confirm("Tem certeza de que deseja excluir esta equipe?")) {
         teams.splice(index, 1); // Remove a equipe do array com base no índice
         await saveTeams(teams); // Atualiza o armazenamento local
-        loadRanking(); // Recarrega a tabela para refletir a exclusão
+        loadRanking(); // Recarrega a tabela de ranking
+        downloadJSON(teams, 'teams.json');  // Save JSON locally
     }
 }
 
+function downloadJSON(data, filename) {
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
 async function getTeams() {
-    return JSON.parse(localStorage.getItem("teams") || "[]");
+    const response = await fetch('teams.json');
+    if (!response.ok) {
+        return [];
+    }
+    return await response.json();
 }
 
 async function saveTeams(teams) {
-    localStorage.setItem("teams", JSON.stringify(teams));
+    localStorage.setItem('teams', JSON.stringify(teams));
 }
