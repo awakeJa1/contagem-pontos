@@ -1,66 +1,88 @@
-document.addEventListener("DOMContentLoaded", () => {
-    loadRanking();
+const gistUrl = 'https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/FILE_ID/teams.json'; // Substitua pela URL do seu Gist
 
-    const form = document.getElementById("team-form");
-    if (form) {
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            const teamName = document.getElementById("team-name").value;
-            const teamColor = document.getElementById("team-color").value;
-            const teamPoints = parseInt(document.getElementById("team-points").value, 10);
-            const teams = await getTeams();
-            teams.push({ Equipe: teamName, Cor: teamColor, Pontos: teamPoints });
-            // Atualizar o JSON manualmente no GitHub
-            alert("Equipe cadastrada! Atualize o arquivo JSON manualmente no GitHub.");
-            window.location.href = "index.html";
-        });
+// Função para carregar equipes do Gist
+async function loadTeams() {
+    const response = await fetch(gistUrl);
+    if (response.ok) {
+        const data = await response.json();
+        return data.teams || [];
+    } else {
+        console.error('Failed to load teams from Gist');
+        return [];
     }
-});
+}
 
-async function loadRanking() {
-    const teams = await getTeams();
-    teams.sort((a, b) => b.Pontos - a.Pontos);  // Ordena as equipes por pontos (decrescente)
-    const tbody = document.querySelector("#ranking-table tbody");
-    tbody.innerHTML = "";
+// Função para exibir equipes na tabela do index.html
+async function displayTeams() {
+    const teams = await loadTeams();
+    const tbody = document.querySelector('#ranking-table tbody');
+    tbody.innerHTML = ''; // Limpa a tabela
+
+    teams.sort((a, b) => b.points - a.points); // Ordena as equipes por pontos em ordem decrescente
+
     teams.forEach((team, index) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = 
-            `<td>${team.Equipe}</td>
-            <td><div style="background-color: ${team.Cor}; width: 20px; height: 20px;"></div></td>
-            <td>${team.Pontos}</td>
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${team.name}</td>
+            <td><div style="background-color: ${team.color}; width: 20px; height: 20px; border-radius: 50%;"></div></td>
+            <td>${team.points}</td>
             <td>
-                <button onclick="updateTeamPoints(${index})">Alterar Pontos</button>
-                <button onclick="deleteTeam(${index})">Excluir</button>
-            </td>`;
-        tbody.appendChild(tr);
+                <button onclick="editPoints(${index})" class="button">Alterar Pontos</button>
+                <button onclick="deleteTeam(${index})" class="button" style="background-color: #ff6f61;">Excluir</button>
+            </td>
+        `;
+        tbody.appendChild(row);
     });
 }
 
-async function updateTeamPoints(index) {
-    const teams = await getTeams();
-    const newPoints = prompt("Insira os novos pontos para a equipe:", teams[index].Pontos);
+// Função para adicionar uma nova equipe (não salva no Gist)
+async function addTeam(event) {
+    event.preventDefault();
+
+    const name = document.querySelector('#team-name').value;
+    const color = document.querySelector('#team-color').value;
+    const points = parseInt(document.querySelector('#team-points').value, 10);
+
+    const teams = await loadTeams();
+    teams.push({ name, color, points });
+
+    // Atualizar o JSON manualmente no Gist não é possível diretamente
+
+    document.querySelector('#team-form').reset(); // Limpa o formulário
+    window.location.href = 'index.html'; // Redireciona para a página inicial
+}
+
+// Função para editar pontos de uma equipe (não salva no Gist)
+async function editPoints(index) {
+    const newPoints = prompt('Digite os novos pontos para a equipe:');
     if (newPoints !== null) {
-        teams[index].Pontos = parseInt(newPoints, 10);
-        // Atualizar o JSON manualmente no GitHub
-        alert("Pontos atualizados! Atualize o arquivo JSON manualmente no GitHub.");
-        loadRanking();
+        const teams = await loadTeams();
+        teams[index].points = parseInt(newPoints, 10);
+
+        // Atualizar o JSON manualmente no Gist não é possível diretamente
+
+        displayTeams(); // Atualiza a tabela
     }
 }
 
+// Função para excluir uma equipe (não salva no Gist)
 async function deleteTeam(index) {
-    const teams = await getTeams();
-    if (confirm("Tem certeza de que deseja excluir esta equipe?")) {
-        teams.splice(index, 1); // Remove a equipe do array com base no índice
-        // Atualizar o JSON manualmente no GitHub
-        alert("Equipe excluída! Atualize o arquivo JSON manualmente no GitHub.");
-        loadRanking(); // Recarrega a tabela de ranking
+    if (confirm('Tem certeza de que deseja excluir esta equipe?')) {
+        const teams = await loadTeams();
+        teams.splice(index, 1);
+
+        // Atualizar o JSON manualmente no Gist não é possível diretamente
+
+        displayTeams(); // Atualiza a tabela
     }
 }
 
-async function getTeams() {
-    const response = await fetch('https://raw.githubusercontent.com/awakeJa1/contagem-pontos/main/teams.json');
-    if (!response.ok) {
-        return [];
-    }
-    return await response.json();
+// Verifica se estamos na página de cadastro
+if (document.querySelector('#team-form')) {
+    document.querySelector('#team-form').addEventListener('submit', addTeam);
+}
+
+// Exibe as equipes se estivermos na página de índice
+if (document.querySelector('#ranking-table')) {
+    displayTeams();
 }
