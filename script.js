@@ -10,7 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const teamPoints = parseInt(document.getElementById("team-points").value, 10);
             const teams = await getTeams();
             teams.push({ Equipe: teamName, Cor: teamColor, Pontos: teamPoints });
-            await saveTeams(teams);
+            // Atualizar o JSON manualmente no GitHub
+            alert("Equipe cadastrada! Atualize o arquivo JSON manualmente no GitHub.");
             window.location.href = "index.html";
         });
     }
@@ -40,7 +41,8 @@ async function updateTeamPoints(index) {
     const newPoints = prompt("Insira os novos pontos para a equipe:", teams[index].Pontos);
     if (newPoints !== null) {
         teams[index].Pontos = parseInt(newPoints, 10);
-        await saveTeams(teams);
+        // Atualizar o JSON manualmente no GitHub
+        alert("Pontos atualizados! Atualize o arquivo JSON manualmente no GitHub.");
         loadRanking();
     }
 }
@@ -49,7 +51,8 @@ async function deleteTeam(index) {
     const teams = await getTeams();
     if (confirm("Tem certeza de que deseja excluir esta equipe?")) {
         teams.splice(index, 1); // Remove a equipe do array com base no índice
-        await saveTeams(teams); // Atualiza o armazenamento local
+        // Atualizar o JSON manualmente no GitHub
+        alert("Equipe excluída! Atualize o arquivo JSON manualmente no GitHub.");
         loadRanking(); // Recarrega a tabela de ranking
     }
 }
@@ -60,17 +63,4 @@ async function getTeams() {
         return [];
     }
     return await response.json();
-}
-
-async function saveTeams(teams) {
-    const response = await fetch('/.netlify/functions/save_teams', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(teams)
-    });
-    if (!response.ok) {
-        console.error('Erro ao salvar os dados em JSON');
-    }
 }
