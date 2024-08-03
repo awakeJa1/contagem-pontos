@@ -1,7 +1,7 @@
-// firebase-config.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
 
+// Sua configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBqJIrrT59JuszJ5aCNZZIOlyM0NlH098k",
   authDomain: "maee-22eec.firebaseapp.com",
@@ -12,7 +12,7 @@ const firebaseConfig = {
   measurementId: "G-CVR1HW9F0L"
 };
 
-// Initialize Firebase
+// Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 

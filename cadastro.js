@@ -24,7 +24,7 @@ async function addTeam(event) {
     console.log('Equipe cadastrada com sucesso');
 
     document.querySelector('#team-form').reset();
-    window.location.href = 'index.html';
+    window.location.href = 'index.html'; // Redireciona para a página de índice
   } catch (error) {
     console.error('Erro ao cadastrar equipe:', error);
   }
