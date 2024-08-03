@@ -1,11 +1,9 @@
-// Importa a configuração do Firebase e Firestore
+// cadastro.js
 import { app } from './firebase-config.js';
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-// Inicializa Firestore
 const db = getFirestore(app);
 
-// Função para adicionar uma equipe ao Firestore
 async function addTeam(event) {
   event.preventDefault();
   console.log('Formulário de cadastro enviado');
@@ -33,7 +31,6 @@ async function addTeam(event) {
   }
 }
 
-// Adiciona o ouvinte de evento ao formulário
 if (document.querySelector('#team-form')) {
   document.querySelector('#team-form').addEventListener('submit', addTeam);
 }
