@@ -6,7 +6,7 @@ async function addTeam(event) {
 
     const name = document.querySelector('#team-name').value;
     const color = document.querySelector('#team-color').value;
-    const points = parseInt(document.querySelector('#team-points').value, 10);
+    const points = parseInt(document.querySelector('#team-points').value, 10); // Garante que points seja um número
 
     try {
         await addDoc(collection(db, 'teams'), {
