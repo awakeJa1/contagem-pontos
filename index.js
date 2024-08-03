@@ -1,10 +1,15 @@
-import { db } from './firebase-config.js';
-import { collection, getDocs } from 'firebase/firestore';
-
+// index.js
 async function loadTeams() {
-    const snapshot = await getDocs(collection(db, 'teams'));
-    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    return data;
+    const db = firebase.firestore(); // Adicione a referência ao Firestore
+    try {
+        const snapshot = await db.collection('teams').get();
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log('Dados carregados:', data);
+        return data;
+    } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        return [];
+    }
 }
 
 async function displayTeams() {
@@ -29,6 +34,64 @@ async function displayTeams() {
     });
 }
 
+async function addTeam(event) {
+    event.preventDefault();
+    console.log('Formulário de cadastro enviado');
+
+    const name = document.querySelector('#team-name').value;
+    const color = document.querySelector('#team-color').value;
+    const points = parseInt(document.querySelector('#team-points').value, 10);
+
+    console.log('Nome da Equipe:', name);
+    console.log('Cor da Equipe:', color);
+    console.log('Pontos:', points);
+
+    try {
+        const db = firebase.firestore(); // Adicione a referência ao Firestore
+        await db.collection('teams').add({
+            name: name,
+            color: color,
+            points: points
+        });
+        console.log('Equipe cadastrada com sucesso');
+
+        document.querySelector('#team-form').reset();
+        window.location.href = 'index.html';
+    } catch (error) {
+        console.error('Erro ao cadastrar equipe:', error);
+    }
+}
+
+async function editPoints(id) {
+    const newPoints = prompt('Digite os novos pontos para a equipe:');
+    if (newPoints !== null) {
+        try {
+            const db = firebase.firestore(); // Adicione a referência ao Firestore
+            await db.collection('teams').doc(id).update({ points: parseInt(newPoints, 10) });
+            console.log('Pontos atualizados com sucesso');
+            displayTeams();
+        } catch (error) {
+            console.error('Erro ao atualizar pontos:', error);
+        }
+    }
+}
+
+async function deleteTeam(id) {
+    if (confirm('Tem certeza de que deseja excluir esta equipe?')) {
+        try {
+            const db = firebase.firestore(); // Adicione a referência ao Firestore
+            await db.collection('teams').doc(id).delete();
+            console.log('Equipe excluída com sucesso');
+            displayTeams();
+        } catch (error) {
+            console.error('Erro ao excluir equipe:', error);
+        }
+    }
+}
+
+if (document.querySelector('#team-form')) {
+    document.querySelector('#team-form').addEventListener('submit', addTeam);
+}
 if (document.querySelector('#ranking-table')) {
     displayTeams();
 }

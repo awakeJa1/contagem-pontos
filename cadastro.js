@@ -1,15 +1,19 @@
-import { db } from './firebase-config.js';
-import { collection, addDoc } from 'firebase/firestore';
-
+// cadastro.js
 async function addTeam(event) {
-    event.preventDefault();  // Evita o comportamento padrão de envio do formulário
+    event.preventDefault();
+    console.log('Formulário de cadastro enviado');
 
     const name = document.querySelector('#team-name').value;
     const color = document.querySelector('#team-color').value;
-    const points = parseInt(document.querySelector('#team-points').value, 10); // Garante que points seja um número
+    const points = parseInt(document.querySelector('#team-points').value, 10);
+
+    console.log('Nome da Equipe:', name);
+    console.log('Cor da Equipe:', color);
+    console.log('Pontos:', points);
 
     try {
-        await addDoc(collection(db, 'teams'), {
+        const db = firebase.firestore(); // Adicione a referência ao Firestore
+        await db.collection('teams').add({
             name: name,
             color: color,
             points: points
